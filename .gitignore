@@ -31,3 +31,6 @@ static/uploads/intrusos/*
 .idea/
 *.swp
 .DS_Store
+
+# Archivos de Python
+./pyrightconfig.json
