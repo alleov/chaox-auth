@@ -1,0 +1,64 @@
+# Guía de Instalación y Configuración - Chaox Auth 
+
+Este proyecto utiliza visión artificial avanzada (MediaPipe y OpenCV) junto con Flask para proveer autenticación biométrica de dos pasos (Rostro y Gestos), con guardado cifrado (AES-256) de los datos y capturas en tiempo real.
+
+## Requisitos Previos
+- Python 3.9 o superior
+- Cámara Web conectada y disponible (índice 0 por defecto)
+
+## 1. Clonar el repositorio y Entorno Virtual
+Se recomienda el uso de un entorno virtual para las dependencias.
+
+```bash
+git clone <tu-repositorio>
+cd gesture-auth
+python3 -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+```
+
+## 2. Instalación de Dependencias
+Instala los paquetes necesarios. Puedes ejecutar:
+
+```bash
+pip install flask flask_sqlalchemy flask_login cryptography python-dotenv mediapipe opencv-python requests
+```
+
+## 3. Configurar el Entorno (.env)
+Crea una copia del archivo `.env.copy` y renómbralo a `.env`.
+
+```bash
+cp .env.copy .env
+```
+
+Abre `.env` en tu editor favorito y asegúrate de modificar `SECRET_KEY`.
+La variable `ENCRYPTION_KEY` requiere un formato válido generado por la librería `cryptography`. Para generar uno propio, ejecuta en Python:
+
+```python
+from cryptography.fernet import Fernet
+print(Fernet.generate_key().decode())
+```
+
+## 4. Asegurar Modelos de MediaPipe
+Verifica que los siguientes archivos `.task` estén descargados y ubicados en el mismo directorio principal de la aplicación:
+- `face_landmarker.task`
+- `gesture_recognizer.task`
+- `hand_landmarker.task` (opcional si es requerido como dependencia extra)
+
+## 5. Iniciar la Aplicación
+
+Ejecuta el programa mediante:
+```bash
+python3 app.py
+```
+
+La aplicación creará automáticamente la base de datos local y las carpetas para almacenar evidencias bajo `/static/uploads/`.
+El servidor iniciará en `http://127.0.0.1:5000` (o el puerto configurado en el `.env`).
+
+## 6. Convertir Usuarios a Administrador
+El sistema integra un panel general (`/admin`). Para otorgarle a tu usuario registrado permisos de administrador, ejecuta el script bash proporcionado:
+
+```bash
+chmod +x set_admin.sh
+sudo ./set_admin.sh
+```
+O de manera manual utilizando SQLite3, modificando el campo `is_admin = 1` del usuario correspondiente en `chaox.db`.

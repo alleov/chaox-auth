@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - {{ app_name }}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-900 transition-colors duration-300 font-sans p-6 text-slate-800 dark:text-slate-100 relative min-h-screen">
+
+    <!-- Dark Mode Switch -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle"
+            class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform text-slate-600 dark:text-slate-300">
+            <i data-lucide="moon" id="moonIcon"></i>
+            <i data-lucide="sun" id="sunIcon" class="hidden"></i>
+        </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto pt-10">
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-10">
+
+            <h1 class="text-3xl font-black tracking-tight text-slate-800 dark:text-white flex items-center gap-2">
+                <i data-lucide="shield" class="w-8 h-8 text-blue-600 dark:text-blue-500"></i>
+                Chaox
+                <span class="text-blue-600 dark:text-blue-500">Gestión de usuarios</span>
+            </h1>
+
+            <a href="/dashboard"
+                class="flex items-center gap-2 bg-white dark:bg-slate-800 px-6 py-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </a>
+
+        </div>
+
+        <!-- GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- CHART -->
+            <div
+                class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-sm flex flex-col items-center justify-center border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+
+                <h3
+                    class="text-[10px] uppercase tracking-[0.3em] font-black text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-2">
+                    <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                    Estadísticas de Acceso
+                </h3>
+
+                <div class="w-full h-64 relative">
+                    <canvas id="chartStatus"></canvas>
+                </div>
+
+            </div>
+
+            <!-- TABLA -->
+            <div
+                class="md:col-span-2 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+
+                <table class="w-full text-left">
+
+                    <thead
+                        class="border-b border-slate-100 dark:border-slate-700 text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-wider">
+
+                        <tr>
+                            <th class="p-5">Usuario</th>
+                            <th class="p-5">ID</th>
+                            <th class="p-5">Estado</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="text-sm">
+
+                        {% for u in usuarios %}
+
+                        <tr
+                            class="border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+
+                            <td class="p-5 font-bold text-slate-700 dark:text-slate-200 flex items-center gap-3">
+                                {% if u.foto_perfil == 'default_user.png' %}
+                                <div
+                                    class="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
+                                    {{ u.nombre[0]|upper }}
+                                </div>
+                                {% else %}
+                                <img src="{{ url_for('get_image', subdir='perfiles', filename=u.foto_perfil) }}"
+                                    class="w-8 h-8 rounded-full object-cover">
+                                {% endif %}
+                                {{ u.nombre }}
+                            </td>
+
+                            <td class="p-5 font-mono text-slate-500 dark:text-slate-400">
+                                {{ u.username }}
+                            </td>
+
+                            <td class="p-5">
+
+                                {% if u.bloqueado %}
+
+                                <span
+                                    class="px-3 py-1 rounded-full text-[10px] font-black bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 flex items-center gap-1 w-max">
+                                    <i data-lucide="lock" class="w-3 h-3"></i> BLOQUEADO
+                                </span>
+
+                                {% else %}
+
+                                <span
+                                    class="px-3 py-1 rounded-full text-[10px] font-black bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 dark:text-emerald-400 flex items-center gap-1 w-max">
+                                    <i data-lucide="check-circle" class="w-3 h-3"></i> ACTIVO
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- MAPA -->
+        <div
+            class="mt-8 bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+            <h3
+                class="text-[10px] uppercase tracking-[0.3em] font-black text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-2">
+                <i data-lucide="globe" class="w-4 h-4"></i>
+                Accesos Globales
+            </h3>
+            <div class="w-full h-[400px] relative overflow-hidden" id="world-map"></div>
+        </div>
+
+    </div>
+
+    <!-- DATOS JINJA -->
+    <script id="stats-json" type="application/json">
+        {{ stats | tojson }}
+    </script>
+    <script id="map-data" type="application/json">
+        {{ map_data | tojson }}
+    </script>
+
+    <!-- JSVectorMap CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/world.js"></script>
+
+    <!-- LOGICA SCRIPT -->
+    <script>
+        lucide.createIcons();
+
+        // Tema oscuro/claro
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.theme = 'dark';
+            } else {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.theme = 'light';
+            }
+
+            if (window.myChart) {
+                window.myChart.options.plugins.legend.labels.color = isDark ? '#f1f5f9' : '#1e293b';
+                window.myChart.update();
+            }
+
+            const mapContainer = document.querySelector('.jvm-region');
+            if (mapContainer && window.myMap) {
+            }
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!html.classList.contains('dark'));
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const stats = JSON.parse(
+                document.getElementById('stats-json').textContent
+            );
+            const mapData = JSON.parse(
+                document.getElementById('map-data').textContent
+            );
+
+            const dataOk = stats.ok || 0;
+            const dataBad = stats.bad || 0;
+
+            const ctx = document.getElementById('chartStatus');
+            const isDark = html.classList.contains('dark');
+
+            if (typeof Chart !== 'undefined') {
+                window.myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['OK', 'FALLOS'],
+                        datasets: [{
+                            data: [dataOk, dataBad],
+                            backgroundColor: ['#10b981', '#f43f5e'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    color: isDark ? '#f1f5f9' : '#1e293b',
+                                    font: { family: "'Inter', sans-serif", weight: 'bold', size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+
+            if (typeof jsVectorMap !== 'undefined') {
+                window.myMap = new jsVectorMap({
+                    selector: "#world-map",
+                    map: "world",
+                    backgroundColor: "transparent",
+                    zoomOnScroll: false,
+                    visualizeData: {
+                        scale: ['#93c5fd', '#2563eb'],
+                        values: mapData
+                    },
+                    regionStyle: {
+                        initial: {
+                            fill: isDark ? '#334155' : '#e2e8f0',
+                            fillOpacity: 1,
+                        }
+                    },
+                    onRegionTooltipShow(event, tooltip, code) {
+                        if (mapData[code]) {
+                            tooltip.text(
+                                tooltip.text() + ' (Accesos: ' + mapData[code] + ')'
+                            );
+                        }
+                    }
+                });
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app_name }} - Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex items-center justify-center min-h-screen p-4 font-sans text-slate-800 dark:text-slate-100 relative">
+    <!-- Dark Mode Switch -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle"
+            class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform text-slate-600 dark:text-slate-300">
+            <i data-lucide="moon" id="moonIcon"></i>
+            <i data-lucide="sun" id="sunIcon" class="hidden"></i>
+        </button>
+    </div>
+
+    <div
+        class="bg-white dark:bg-slate-800 p-10 rounded-[3.5rem] shadow-2xl max-w-md w-full border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+        <div class="text-center mb-10">
+            <div
+                class="w-16 h-16 bg-blue-600 dark:bg-blue-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none">
+                <i data-lucide="user-plus" class="w-8 h-8 text-white"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Nuevo Perfil</h2>
+            <p class="text-slate-400 dark:text-slate-500 text-sm mt-2">Asocie su biometría al sistema</p>
+        </div>
+
+        <form method="POST" class="space-y-5">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div
+                class="p-4 bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 rounded-2xl text-[10px] font-bold flex justify-center items-center gap-2 uppercase border border-rose-100 dark:border-rose-900/50">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <input type="text" name="usuario" placeholder="Matrícula / ID"
+                class="w-full p-4 bg-slate-50 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-2xl border-none outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 font-bold transition-all"
+                required>
+            <input type="text" name="nombre" placeholder="Nombre Completo"
+                class="w-full p-4 bg-slate-50 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-2xl border-none outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 font-bold transition-all"
+                required>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label
+                        class="text-[9px] font-black text-slate-400 dark:text-slate-500 ml-2 uppercase flex items-center gap-1"><i
+                            data-lucide="hand" class="w-3 h-3"></i> Gesto 1</label>
+                    <select name="gesto1"
+                        class="w-full p-4 bg-slate-100 dark:bg-slate-700 dark:text-white rounded-2xl border-none outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 text-sm font-bold transition-all">
+                        <option value="Thumb_Up">Pulgar Arriba</option>
+                        <option value="Victory">Victoria</option>
+                        <option value="Open_Palm">Palma Abierta</option>
+                        <option value="Pointing_Up">Señalar Arriba</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label
+                        class="text-[9px] font-black text-slate-400 dark:text-slate-500 ml-2 uppercase flex items-center gap-1"><i
+                            data-lucide="hand" class="w-3 h-3"></i> Gesto 2</label>
+                    <select name="gesto2"
+                        class="w-full p-4 bg-slate-100 dark:bg-slate-700 dark:text-white rounded-2xl border-none outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 text-sm font-bold transition-all">
+                        <option value="Open_Palm">Palma Abierta</option>
+                        <option value="Thumb_Up">Pulgar Arriba</option>
+                        <option value="Victory">Victoria</option>
+                        <option value="ILoveYou">Te Amo</option>
+                    </select>
+                </div>
+            </div>
+
+            <button
+                class="flex items-center justify-center gap-2 w-full py-5 bg-blue-600 dark:bg-blue-500 text-white rounded-[1.5rem] font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                Crear Perfil
+            </button>
+            <a href="/"
+                class="block text-center text-slate-400 dark:text-slate-500 text-xs mt-2 hover:underline hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors">Volver
+                al inicio</a>
+        </form>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // 
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.theme = 'dark';
+            } else {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.theme = 'light';
+            }
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!html.classList.contains('dark'));
+        });
+    </script>
+</body>
+
+</html>

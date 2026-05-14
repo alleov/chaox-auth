@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-900 transition-colors duration-300 min-h-screen flex flex-col items-center justify-center p-6 text-slate-800 dark:text-slate-100 relative">
+    <!-- Dark Mode Switch -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle"
+            class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform text-slate-600 dark:text-slate-300">
+            <i data-lucide="moon" id="moonIcon"></i>
+            <i data-lucide="sun" id="sunIcon" class="hidden"></i>
+        </button>
+    </div>
+
+    <div
+        class="max-w-md w-full bg-white dark:bg-slate-800 p-10 rounded-[3.5rem] shadow-2xl border border-slate-100 dark:border-slate-700 text-center transition-colors duration-300">
+        <div
+            class="relative w-24 h-24 bg-blue-600 dark:bg-blue-500 rounded-[2rem] mx-auto mb-8 flex items-center justify-center shadow-2xl shadow-blue-200 dark:shadow-none">
+            <i data-lucide="shield-check" class="w-12 h-12 text-white"></i>
+            <div
+                class="absolute inset-0 rounded-[2rem] border-4 border-blue-400 dark:border-blue-300 animate-ping opacity-20">
+            </div>
+        </div>
+        <h1 class="text-4xl font-extrabold mb-3 tracking-tighter leading-tight dark:text-white">{{ app_name }}</h1>
+        <p class="text-slate-400 dark:text-slate-400 text-sm mb-10 leading-relaxed px-4">
+            Control de acceso de usuarios usando IA, reconociendo gestos dinamicos, implementacion de cifrado.
+        </p>
+        <div class="space-y-4">
+            <a href="/login"
+                class="flex items-center justify-center gap-2 w-full py-5 bg-blue-600 dark:bg-blue-500 text-white rounded-[1.5rem] font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all shadow-xl shadow-blue-100 dark:shadow-none active:scale-95">
+                <i data-lucide="log-in" class="w-5 h-5"></i>
+                Ingresar al Sistema
+            </a>
+            <a href="/registro"
+                class="flex items-center justify-center gap-2 w-full py-5 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 rounded-[1.5rem] font-bold text-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-all border border-slate-200 dark:border-slate-600 active:scale-95">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                Registrar Matrícula
+            </a>
+        </div>
+    </div>
+    <p class="mt-12 text-slate-300 dark:text-slate-600 text-[10px] font-black uppercase tracking-[0.3em]">Sistemas
+        Programables 2026</p>
+
+    <script>
+        lucide.createIcons();
+
+        // 
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.theme = 'dark';
+            } else {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.theme = 'light';
+            }
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!html.classList.contains('dark'));
+        });
+    </script>
+</body>
+
+</html>

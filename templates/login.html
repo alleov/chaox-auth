@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app_name }} - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-900 transition-colors duration-300 flex items-center justify-center min-h-screen p-4 font-sans text-slate-800 dark:text-slate-100 relative">
+    <!-- Dark Mode Switch -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle"
+            class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-105 transition-transform text-slate-600 dark:text-slate-300">
+            <i data-lucide="moon" id="moonIcon"></i>
+            <i data-lucide="sun" id="sunIcon" class="hidden"></i>
+        </button>
+    </div>
+
+    <div
+        class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] shadow-2xl max-w-lg w-full text-center border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+        <div class="mb-6">
+            {% if step == 2 and user %}
+            {% if user.foto_perfil == 'default_user.png' %}
+            <div
+                class="w-24 h-24 mx-auto mb-4 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-4xl ring-4 ring-blue-50 dark:ring-blue-900/50 shadow-lg shadow-blue-200 dark:shadow-none">
+                {{ user.nombre[0]|upper }}{{ user.nombre.split()[-1][0]|upper if user.nombre.split()|length > 1 else ''
+                }}
+            </div>
+            {% else %}
+            <img src="{{ url_for('get_image', subdir='perfiles', filename=user.foto_perfil) }}"
+                class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500 object-cover shadow-lg">
+            {% endif %}
+            <h2 class="text-2xl font-bold dark:text-white">Hola, {{ user.nombre.split()[0] }}</h2>
+            <p
+                class="text-blue-500 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest animate-pulse italic mt-2">
+                Paso 1 Verificado - Realice el Segundo Gesto</p>
+            {% else %}
+            <div
+                class="w-16 h-16 bg-blue-600 dark:bg-blue-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none text-white">
+                <i data-lucide="user-check" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-tight dark:text-white">Acceso Biométrico</h2>
+            <p class="text-slate-400 dark:text-slate-500 text-sm mt-1">Escanee su rostro y gesto</p>
+            {% endif %}
+        </div>
+
+        <div
+            class="relative rounded-[2.5rem] overflow-hidden bg-black mb-6 aspect-video shadow-inner border-4 border-slate-50 dark:border-slate-700">
+            <img src="{{ url_for('video_feed') }}" class="w-full h-full object-cover">
+        </div>
+
+        <form method="POST" class="space-y-4" id="loginForm">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div
+                class="mb-4 p-4 rounded-2xl text-[10px] font-black uppercase tracking-tighter bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Bloqueo UI -->
+            <div id="lockedMessage"
+                class="hidden mb-4 p-4 rounded-2xl text-sm font-bold uppercase bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex flex-col items-center justify-center gap-2">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="lock" class="w-5 h-5"></i>
+                    <span>Cuenta Bloqueada</span>
+                </div>
+                <div class="text-xs">Espere <span id="countdownText" class="text-lg"></span> segundos</div>
+            </div>
+
+            {% if step == 1 %}
+            <input type="text" name="usuario" placeholder="Matrícula"
+                class="w-full p-5 bg-slate-100 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-3xl text-center text-xl font-bold outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/50 border-none transition-all"
+                required autofocus id="usuarioInput">
+            <button type="submit"
+                class="w-full py-5 bg-blue-600 dark:bg-blue-500 text-white rounded-3xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 shadow-xl shadow-blue-100 dark:shadow-none transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed"
+                id="submitBtn">Siguiente</button>
+            {% else %}
+            <button type="submit"
+                class="w-full py-5 bg-emerald-600 dark:bg-emerald-500 text-white rounded-3xl font-bold text-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 shadow-xl shadow-emerald-100 dark:shadow-none transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed"
+                id="submitBtn">Confirmar Identidad</button>
+            {% endif %}
+        </form>
+        <a href="/"
+            class="block mt-6 text-slate-400 dark:text-slate-500 text-xs hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors">Volver
+            al inicio</a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // 
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function setTheme(isDark) {
+            if (isDark) {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.theme = 'dark';
+            } else {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.theme = 'light';
+            }
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            setTheme(!html.classList.contains('dark'));
+        });
+
+        // Bloqueo logica
+        let lockedRemaining = {{ locked_remaining | default (0) }};
+        const lockedMessage = document.getElementById('lockedMessage');
+        const countdownText = document.getElementById('countdownText');
+        const submitBtn = document.getElementById('submitBtn');
+        const usuarioInput = document.getElementById('usuarioInput');
+
+        if (lockedRemaining > 0) {
+            lockedMessage.classList.remove('hidden');
+            submitBtn.disabled = true;
+            if (usuarioInput) usuarioInput.disabled = true;
+
+            function updateTimer() {
+                countdownText.innerText = lockedRemaining;
+                if (lockedRemaining <= 0) {
+                    lockedMessage.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    if (usuarioInput) usuarioInput.disabled = false;
+                    window.location.reload();
+                } else {
+                    lockedRemaining--;
+                    setTimeout(updateTimer, 1000);
+                }
+            }
+            updateTimer();
+        }
+    </script>
+</body>
+
+</html>
